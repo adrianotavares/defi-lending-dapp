@@ -1,4 +1,4 @@
-# DeFi Lending DApp
+# DeFi lending dApp
 
 Este projeto é um DApp de empréstimos descentralizados (DeFi Lending) na testnet Sepolia, com front-end publicado no GitHub Pages.
 
