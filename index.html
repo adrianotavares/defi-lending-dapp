@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang=”pt-BR”>
+<head>
+  <meta charset=”UTF-8”>
+  <title>dApp DeFi - Empréstimo Simples</title>
+  <script src=”https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.min.js”></script>
+  <script src=”app.js” defer></script>
+</head>
+<body>
+  <h1>dApp DeFi - Empréstimo Simples</h1>
+  <button onclick=”connectWallet()”>Conectar MetaMask</button>
+
+  <div>
+    <input id=”depositValue” type=”number” placeholder=”Valor em ETH”>
+    <button onclick=”deposit()”>Depositar</button>
+  </div>
+
+  <div>
+    <input id=”borrowValue” type=”number” placeholder=”Valor em ETH”>
+    <button onclick=”borrow()”>Tomar emprestado</button>
+  </div>
+
+  <div>
+    <input id=”repayValue” type=”number” placeholder=”Valor em ETH”>
+    <button onclick=”repay()”>Quitar empréstimo</button>
+  </div>
+
+  <pre id=”log”></pre>
+</body>
+</html>
