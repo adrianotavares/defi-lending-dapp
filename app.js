@@ -25,24 +25,36 @@ async function connectWallet() {
 }
 
 async function deposit() {
-  const value = document.getElementById("depositValue").value;
-  const tx = await contract.deposit({ value: ethers.parseEther(value) });
-  await tx.wait();
-  log("Depósito realizado!");
+    try {
+      const value = document.getElementById("depositValue").value;
+      const tx = await contract.deposit({ value: ethers.parseEther(value) });
+      await tx.wait();
+      log("Depósito realizado!");
+    } catch (err) {
+      log("Erro ao conectar: " + err.message);
+    }
 }
 
 async function borrow() {
-  const value = document.getElementById("borrowValue").value;
-  const tx = await contract.borrow(ethers.parseEther(value));
-  await tx.wait();
-  log("Empréstimo recebido!");
+ try {
+      const value = document.getElementById("borrowValue").value;
+      const tx = await contract.borrow(ethers.parseEther(value));
+      await tx.wait();
+      log("Empréstimo recebido!");
+    } catch (err) {
+      log("Erro ao conectar: " + err.message);
+    }
 }
 
 async function repay() {
-  const value = document.getElementById("repayValue").value;
-  const tx = await contract.repay({ value: ethers.parseEther(value) });
-  await tx.wait();
-  log("Empréstimo quitado!");
+  try {
+      const value = document.getElementById("repayValue").value;
+      const tx = await contract.repay({ value: ethers.parseEther(value) });
+      await tx.wait();
+      log("Empréstimo quitado!");
+    } catch (err) {
+      log("Erro ao conectar: " + err.message);
+    }
 }
 
 function log(msg) {
