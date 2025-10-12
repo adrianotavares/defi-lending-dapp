@@ -42,7 +42,7 @@ async function repay() {
   const value = document.getElementById("repayValue").value;
   const tx = await contract.repay({ value: ethers.parseEther(value) });
   await tx.wait();
-  log("💸 Empréstimo quitado!");
+  log("Empréstimo quitado!");
 }
 
 function log(msg) {
