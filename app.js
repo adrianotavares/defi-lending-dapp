@@ -1,4 +1,4 @@
-const contractAddress = "0x63BFa9D9d1a33cE51A6F7aFD79fd2EC88193B3A5 ";
+const contractAddress = "0x63BFa9D9d1a33cE51A6F7aFD79fd2EC88193B3A5";
 const abi = [
   "function deposit() payable",
   "function borrow(uint256 amount)",
