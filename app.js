@@ -9,11 +9,19 @@ const abi = [
 let signer, contract;
 
 async function connectWallet() {
-  await window.ethereum.request({ method: 'eth_requestAccounts' });
-  const provider = new ethers.BrowserProvider(window.ethereum);
-  signer = await provider.getSigner();
-  contract = new ethers.Contract(contractAddress, abi, signer);
-  log("Carteira conectada!");
+  if (!window.ethereum) {
+    log("MetaMask não encontrada. Instale a extensão!");
+    return;
+  }
+  try {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    signer = await provider.getSigner();
+    contract = new ethers.Contract(contractAddress, abi, signer);
+    log("Carteira conectada!");
+  } catch (err) {
+    log("Erro ao conectar: " + err.message);
+  }
 }
 
 async function deposit() {
