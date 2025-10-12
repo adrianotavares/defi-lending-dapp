@@ -8,13 +8,13 @@ contract SimpleLending {
 
     // Depositar ETH no pool
     function deposit() external payable {
-        require(msg.value > 0, “Envie algum valor”);
+        require(msg.value > 0, "Envie algum valor");
         deposits[msg.sender] += msg.value;
     }
 
     // Tomar emprestado até 50% do saldo do pool
     function borrow(uint256 amount) external {
-        require(amount <= address(this).balance / 2, “Limite excedido”);
+        require(amount <= address(this).balance / 2, "Limite excedido");
         loans[msg.sender] += amount;
         payable(msg.sender).transfer(amount);
     }
@@ -22,7 +22,7 @@ contract SimpleLending {
     // Quitar o empréstimo com juros
     function repay() external payable {
         uint256 debt = loans[msg.sender] + (loans[msg.sender] * interestRate / 100);
-        require(msg.value >= debt, “Valor insuficiente”);
+        require(msg.value >= debt, "Valor insuficiente");
         loans[msg.sender] = 0;
     }
 
