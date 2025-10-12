@@ -6,7 +6,7 @@ Este projeto é um DApp de empréstimos descentralizados (DeFi Lending) na testn
 
 - [Visão Geral](#visão-geral)
 - [Pré-requisitos](#pré-requisitos)
-- [Deploy do Smart Contract](#deploy-do-smart-contract)
+- [Deploy do Smart Contract via Remix](#deploy-do-smart-contract-via-remix)
 - [Configuração da MetaMask](#configuração-da-metamask)
 - [Publicação do Front-End no GitHub Pages](#publicação-do-front-end-no-github-pages)
 - [Uso](#uso)
@@ -20,33 +20,34 @@ O DeFi Lending DApp permite que usuários depositem ativos como garantia e tomem
 
 ## Pré-requisitos
 
-- Node.js >= 18.x
-- [Hardhat](https://hardhat.org/)
 - Conta MetaMask configurada na testnet Sepolia
 - ETH de teste (Sepolia Faucet)
 - GitHub account
 
-## Deploy do Smart Contract
+## Deploy do Smart Contract via Remix
 
-1. Instale as dependências:
+1. **Acesse o [Remix IDE](https://remix.ethereum.org/).**
 
-   ```bash
-   npm install
-   ```
+2. **Carregue o contrato `SimpleLending.sol`:**
+   - Crie um novo arquivo chamado `SimpleLending.sol` na aba "File Explorer" do Remix.
+   - Cole o conteúdo do contrato no arquivo.
 
-2. Compile os contratos:
+3. **Compile o contrato:**
+   - Selecione a versão do compilador Solidity adequada (ex: 0.8.28) na aba "Solidity Compiler".
+   - Clique em "Compile SimpleLending.sol".
 
-   ```bash
-   npx hardhat compile
-   ```
+4. **Conecte sua MetaMask à testnet Sepolia:**
+   - Garanta que a MetaMask está no navegador e conectada na rede Sepolia.
 
-3. Faça o deploy na Sepolia:
+5. **Faça o deploy do contrato:**
+   - Vá para a aba "Deploy & Run Transactions".
+   - Selecione a conta MetaMask desejada.
+   - Escolha "Injected Provider - MetaMask" como ambiente.
+   - Clique em "Deploy" e aprove a transação na MetaMask.
 
-   ```bash
-   npx hardhat run scripts/deploy.js --network sepolia
-   ```
-
-4. Anote o endereço do contrato gerado, por exemplo: `0x1234...`.
+6. **Anote o endereço do contrato gerado:**  
+   - O Remix exibirá o endereço do contrato na seção "Deployed Contracts".
+   - Use esse endereço para configurar o front-end.
 
 ## Configuração da MetaMask
 
@@ -73,7 +74,7 @@ O DeFi Lending DApp permite que usuários depositem ativos como garantia e tomem
 ## Tecnologias Utilizadas
 
 - **Solidity** — Contratos inteligentes
-- **Hardhat** — Ambiente de desenvolvimento Ethereum
+- **Remix IDE** — Deploy do contrato na Sepolia
 - **MetaMask** — Carteira para interação com dApps
 - **Ethers.js** — Conexão Web3 front-end
 - **GitHub Pages** — Hospedagem do front-end
