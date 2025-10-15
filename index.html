@@ -98,6 +98,28 @@
       vertical-align: middle;
       margin-right: 7px;
     }
+    .wallet-info {
+      background: #e8f5e8;
+      border: 1px solid #5bc0be;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-size: 0.9rem;
+    }
+    .info-item {
+      margin-bottom: 8px;
+    }
+    .info-item:last-child {
+      margin-bottom: 0;
+    }
+    .info-item strong {
+      color: #2A4B7C;
+    }
+    .info-item span {
+      color: #234;
+      font-family: monospace;
+      word-break: break-all;
+    }
     @media (max-width: 520px) {
       .container {
         padding: 16px 5vw;
@@ -114,6 +136,17 @@
     <button class="wallet-btn" onclick="connectWallet()">
       <span class="icon"></span>Conectar MetaMask
     </button>
+
+    <div id="walletInfo" class="wallet-info" style="display: none;">
+      <div class="info-item">
+        <strong>Endereço:</strong>
+        <span id="walletAddress"></span>
+      </div>
+      <div class="info-item">
+        <strong>Rede:</strong>
+        <span id="networkName"></span>
+      </div>
+    </div>
 
     <div class="section">
       <label for="depositValue">Depósito (ETH)</label>

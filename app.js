@@ -18,7 +18,20 @@ async function connectWallet() {
     const provider = new ethers.BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
     contract = new ethers.Contract(contractAddress, abi, signer);
-    log("Carteira conectada!");
+    
+    // Obter endereço da wallet
+    const address = await signer.getAddress();
+    document.getElementById("walletAddress").textContent = address;
+    
+    // Obter informações da rede
+    const network = await provider.getNetwork();
+    const networkName = getNetworkName(network.chainId);
+    document.getElementById("networkName").textContent = networkName;
+    
+    // Exibir seção de informações da wallet
+    document.getElementById("walletInfo").style.display = "block";
+    
+    log("Carteira conectada com sucesso!");
   } catch (err) {
     log("Erro ao conectar: " + err.message);
   }
@@ -55,6 +68,22 @@ async function repay() {
     } catch (err) {
       log("Erro ao conectar: " + err.message);
     }
+}
+
+function getNetworkName(chainId) {
+  const networks = {
+    1: "Ethereum Mainnet",
+    5: "Goerli Testnet", 
+    11155111: "Sepolia Testnet",
+    137: "Polygon Mainnet",
+    80001: "Mumbai Testnet",
+    56: "BSC Mainnet",
+    97: "BSC Testnet",
+    31337: "Localhost",
+    1337: "Ganache"
+  };
+  
+  return networks[Number(chainId)] || `Rede desconhecida (ID: ${chainId})`;
 }
 
 function log(msg) {
