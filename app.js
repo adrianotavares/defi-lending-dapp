@@ -31,6 +31,9 @@ async function connectWallet() {
     // Exibir seção de informações da wallet
     document.getElementById("walletInfo").style.display = "block";
     
+    // Atualizar saldo do contrato após conectar
+    await updateContractBalance();
+    
     log("Carteira conectada com sucesso!");
   } catch (err) {
     log("Erro ao conectar: " + err.message);
@@ -42,9 +45,10 @@ async function deposit() {
       const value = document.getElementById("depositValue").value;
       const tx = await contract.deposit({ value: ethers.parseEther(value) });
       await tx.wait();
+      await updateContractBalance();
       log("Depósito realizado!");
     } catch (err) {
-      log("Erro ao conectar: " + err.message);
+      log("Erro ao depositar: " + err.message);
     }
 }
 
@@ -53,9 +57,10 @@ async function borrow() {
       const value = document.getElementById("borrowValue").value;
       const tx = await contract.borrow(ethers.parseEther(value));
       await tx.wait();
+      await updateContractBalance();
       log("Empréstimo recebido!");
     } catch (err) {
-      log("Erro ao conectar: " + err.message);
+      log("Erro ao fazer empréstimo: " + err.message);
     }
 }
 
@@ -64,10 +69,29 @@ async function repay() {
       const value = document.getElementById("repayValue").value;
       const tx = await contract.repay({ value: ethers.parseEther(value) });
       await tx.wait();
+      await updateContractBalance();
       log("Empréstimo quitado!");
     } catch (err) {
-      log("Erro ao conectar: " + err.message);
+      log("Erro ao quitar empréstimo: " + err.message);
     }
+}
+
+async function updateContractBalance() {
+  try {
+    if (!contract) {
+      // Se não há contrato conectado, criar uma instância apenas para leitura
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const readOnlyContract = new ethers.Contract(contractAddress, abi, provider);
+      const balance = await readOnlyContract.getPoolBalance();
+      document.getElementById("contractBalance").textContent = ethers.formatEther(balance);
+    } else {
+      const balance = await contract.getPoolBalance();
+      document.getElementById("contractBalance").textContent = ethers.formatEther(balance);
+    }
+  } catch (err) {
+    document.getElementById("contractBalance").textContent = "Erro ao carregar";
+    console.error("Erro ao buscar saldo do contrato:", err);
+  }
 }
 
 function getNetworkName(chainId) {
@@ -89,3 +113,10 @@ function getNetworkName(chainId) {
 function log(msg) {
   document.getElementById("log").textContent = msg;
 }
+
+// Função que executa quando a página carrega
+window.addEventListener('load', async () => {
+  // Buscar saldo do contrato ao carregar a página
+  await updateContractBalance();
+  log("dApp carregado! Conecte sua carteira para interagir.");
+});
