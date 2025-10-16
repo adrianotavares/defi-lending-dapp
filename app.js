@@ -3,7 +3,10 @@ const abi = [
   "function deposit() payable",
   "function borrow(uint256 amount)",
   "function repay() payable",
-  "function getPoolBalance() view returns (uint256)"
+  "function getPoolBalance() view returns (uint256)",
+  "function deposits(address) view returns (uint256)",
+  "function loans(address) view returns (uint256)",
+  "function interestRate() view returns (uint256)"
 ];
 
 let signer, contract;
@@ -31,8 +34,14 @@ async function connectWallet() {
     // Exibir seção de informações da wallet
     document.getElementById("walletInfo").style.display = "block";
     
+    // Exibir seção de informações do usuário
+    document.getElementById("userInfo").style.display = "block";
+    
     // Atualizar saldo do contrato após conectar
     await updateContractBalance();
+    
+    // Atualizar informações do usuário após conectar
+    await updateUserInfo();
     
     log("Carteira conectada com sucesso!");
   } catch (err) {
@@ -46,6 +55,8 @@ async function deposit() {
       const tx = await contract.deposit({ value: ethers.parseEther(value) });
       await tx.wait();
       await updateContractBalance();
+      await updateUserInfo();
+      document.getElementById("depositValue").value = "";
       log("Depósito realizado!");
     } catch (err) {
       log("Erro ao depositar: " + err.message);
@@ -58,6 +69,8 @@ async function borrow() {
       const tx = await contract.borrow(ethers.parseEther(value));
       await tx.wait();
       await updateContractBalance();
+      await updateUserInfo();
+      document.getElementById("borrowValue").value = "";
       log("Empréstimo recebido!");
     } catch (err) {
       log("Erro ao fazer empréstimo: " + err.message);
@@ -70,6 +83,8 @@ async function repay() {
       const tx = await contract.repay({ value: ethers.parseEther(value) });
       await tx.wait();
       await updateContractBalance();
+      await updateUserInfo();
+      document.getElementById("repayValue").value = "";
       log("Empréstimo quitado!");
     } catch (err) {
       log("Erro ao quitar empréstimo: " + err.message);
@@ -91,6 +106,35 @@ async function updateContractBalance() {
   } catch (err) {
     document.getElementById("contractBalance").textContent = "Erro ao carregar";
     console.error("Erro ao buscar saldo do contrato:", err);
+  }
+}
+
+async function updateUserInfo() {
+  try {
+    if (!contract || !signer) {
+      return;
+    }
+
+    const userAddress = await signer.getAddress();
+    
+    // Buscar depósitos do usuário
+    const userDeposits = await contract.deposits(userAddress);
+    document.getElementById("userDeposits").textContent = ethers.formatEther(userDeposits);
+    
+    // Buscar empréstimos do usuário
+    const userLoans = await contract.loans(userAddress);
+    document.getElementById("userLoans").textContent = ethers.formatEther(userLoans);
+    
+    // Calcular valor a quitar com juros
+    const interestRate = await contract.interestRate();
+    const debt = userLoans + (userLoans * interestRate / 100n);
+    document.getElementById("debtWithInterest").textContent = ethers.formatEther(debt);
+    
+  } catch (err) {
+    console.error("Erro ao buscar informações do usuário:", err);
+    document.getElementById("userDeposits").textContent = "Erro";
+    document.getElementById("userLoans").textContent = "Erro";
+    document.getElementById("debtWithInterest").textContent = "Erro";
   }
 }
 

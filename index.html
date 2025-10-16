@@ -143,6 +143,20 @@
     .refresh-btn:hover {
       background: #e0a800;
     }
+    .user-info {
+      background: #e8f4fd;
+      border: 1px solid #007bff;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-size: 0.9rem;
+    }
+    .user-info h3 {
+      margin: 0 0 12px 0;
+      color: #007bff;
+      font-size: 1.1rem;
+      text-align: center;
+    }
     @media (max-width: 520px) {
       .container {
         padding: 16px 5vw;
@@ -178,6 +192,25 @@
       </div>
       <button class="refresh-btn" onclick="updateContractBalance()">
         <span class="icon">🔄</span>Atualizar Saldo
+      </button>
+    </div>
+
+    <div id="userInfo" class="user-info" style="display: none;">
+      <h3>Suas Posições</h3>
+      <div class="info-item">
+        <strong>Seus Depósitos:</strong>
+        <span id="userDeposits">0</span> ETH
+      </div>
+      <div class="info-item">
+        <strong>Seus Empréstimos:</strong>
+        <span id="userLoans">0</span> ETH
+      </div>
+      <div class="info-item">
+        <strong>Valor a Quitar (com juros):</strong>
+        <span id="debtWithInterest">0</span> ETH
+      </div>
+      <button class="refresh-btn" onclick="updateUserInfo()">
+        <span class="icon">🔄</span>Atualizar Posições
       </button>
     </div>
 
