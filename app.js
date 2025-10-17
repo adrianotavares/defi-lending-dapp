@@ -19,6 +19,59 @@ async function connectWallet() {
   try {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     const provider = new ethers.BrowserProvider(window.ethereum);
+    
+    // Verificar se está na rede Sepolia
+    const network = await provider.getNetwork();
+    const sepoliaChainId = 11155111;
+    
+    if (Number(network.chainId) !== sepoliaChainId) {
+      // Tentar trocar para Sepolia automaticamente
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0xaa36a7' }], // Sepolia chainId em hex
+        });
+        log("Trocando para Sepolia Testnet...");
+        // Aguardar um momento para a troca ser processada
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } catch (switchError) {
+        // Se a rede não estiver adicionada, adicionar Sepolia
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0xaa36a7',
+                chainName: 'Sepolia Test Network',
+                nativeCurrency: {
+                  name: 'ETH',
+                  symbol: 'ETH',
+                  decimals: 18
+                },
+                rpcUrls: ['https://sepolia.infura.io/v3/'],
+                blockExplorerUrls: ['https://sepolia.etherscan.io/']
+              }]
+            });
+            log("Rede Sepolia adicionada! Conectando...");
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } catch (addError) {
+            log("Erro ao adicionar rede Sepolia. Mude manualmente para Sepolia Testnet.");
+            return;
+          }
+        } else {
+          log("Erro ao trocar rede. Mude manualmente para Sepolia Testnet.");
+          return;
+        }
+      }
+    }
+    
+    // Verificar novamente após a tentativa de troca
+    const updatedNetwork = await provider.getNetwork();
+    if (Number(updatedNetwork.chainId) !== sepoliaChainId) {
+      log("❌ Este dApp funciona apenas na Sepolia Testnet. Por favor, troque a rede no MetaMask.");
+      return;
+    }
+    
     signer = await provider.getSigner();
     contract = new ethers.Contract(contractAddress, abi, signer);
     
@@ -27,8 +80,7 @@ async function connectWallet() {
     document.getElementById("walletAddress").textContent = address;
     
     // Obter informações da rede
-    const network = await provider.getNetwork();
-    const networkName = getNetworkName(network.chainId);
+    const networkName = getNetworkName(updatedNetwork.chainId);
     document.getElementById("networkName").textContent = networkName;
     
     // Exibir seção de informações da wallet
@@ -43,7 +95,7 @@ async function connectWallet() {
     // Atualizar informações do usuário após conectar
     await updateUserInfo();
     
-    log("Carteira conectada com sucesso!");
+    log("✅ Carteira conectada na Sepolia Testnet!");
   } catch (err) {
     log("Erro ao conectar: " + err.message);
   }
@@ -51,7 +103,14 @@ async function connectWallet() {
 
 async function deposit() {
     try {
+      if (!await validateNetwork()) return;
+      
       const value = document.getElementById("depositValue").value;
+      if (!value || parseFloat(value) <= 0) {
+        log("Por favor, insira um valor válido para depositar.");
+        return;
+      }
+      
       const tx = await contract.deposit({ value: ethers.parseEther(value) });
       await tx.wait();
       await updateContractBalance();
@@ -65,7 +124,14 @@ async function deposit() {
 
 async function borrow() {
  try {
+      if (!await validateNetwork()) return;
+      
       const value = document.getElementById("borrowValue").value;
+      if (!value || parseFloat(value) <= 0) {
+        log("Por favor, insira um valor válido para empréstimo.");
+        return;
+      }
+      
       const tx = await contract.borrow(ethers.parseEther(value));
       await tx.wait();
       await updateContractBalance();
@@ -79,7 +145,14 @@ async function borrow() {
 
 async function repay() {
   try {
+      if (!await validateNetwork()) return;
+      
       const value = document.getElementById("repayValue").value;
+      if (!value || parseFloat(value) <= 0) {
+        log("Por favor, insira um valor válido para quitação.");
+        return;
+      }
+      
       const tx = await contract.repay({ value: ethers.parseEther(value) });
       await tx.wait();
       await updateContractBalance();
@@ -138,6 +211,29 @@ async function updateUserInfo() {
   }
 }
 
+async function validateNetwork() {
+  if (!window.ethereum || !signer) {
+    log("Carteira não conectada! Conecte sua carteira primeiro.");
+    return false;
+  }
+  
+  try {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const network = await provider.getNetwork();
+    const sepoliaChainId = 11155111;
+    
+    if (Number(network.chainId) !== sepoliaChainId) {
+      log("❌ Operação cancelada! Troque para Sepolia Testnet.");
+      return false;
+    }
+    
+    return true;
+  } catch (err) {
+    log("Erro ao validar rede: " + err.message);
+    return false;
+  }
+}
+
 function getNetworkName(chainId) {
   const networks = {
     1: "Ethereum Mainnet",
@@ -158,8 +254,42 @@ function log(msg) {
   document.getElementById("log").textContent = msg;
 }
 
+// Função para detectar mudanças de rede
+function setupNetworkListener() {
+  if (window.ethereum) {
+    window.ethereum.on('chainChanged', (chainId) => {
+      const sepoliaChainId = '0xaa36a7'; // Sepolia em hex
+      if (chainId !== sepoliaChainId) {
+        log("❌ Rede alterada! Este dApp funciona apenas na Sepolia Testnet.");
+        // Ocultar seções de informações do usuário
+        document.getElementById("walletInfo").style.display = "none";
+        document.getElementById("userInfo").style.display = "none";
+        // Limpar variáveis de contrato
+        signer = null;
+        contract = null;
+      } else {
+        log("✅ Conectado na Sepolia Testnet! Clique em 'Conectar MetaMask' novamente.");
+      }
+    });
+
+    // Detectar mudanças de conta
+    window.ethereum.on('accountsChanged', (accounts) => {
+      if (accounts.length === 0) {
+        log("Carteira desconectada!");
+        document.getElementById("walletInfo").style.display = "none";
+        document.getElementById("userInfo").style.display = "none";
+        signer = null;
+        contract = null;
+      }
+    });
+  }
+}
+
 // Função que executa quando a página carrega
 window.addEventListener('load', async () => {
+  // Configurar listeners de rede
+  setupNetworkListener();
+  
   // Buscar saldo do contrato ao carregar a página
   await updateContractBalance();
   log("dApp carregado! Conecte sua carteira para interagir.");
