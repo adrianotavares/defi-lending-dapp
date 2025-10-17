@@ -18,6 +18,8 @@ Este projeto é um DApp de empréstimos descentralizados (DeFi Lending) na testn
 
 O DeFi Lending DApp permite que usuários depositem ativos como garantia e tomem empréstimos de forma automatizada através de contratos inteligentes Ethereum. O objetivo é ser um exemplo simples de como implementar e interagir com contratos DeFi.
 
+[#7 DeFi na Prática: construindo um dApp de empréstimos na Blockchain](https://ethbeaga.substack.com/p/7-defi-na-pratica-construindo-um)
+
 ## Pré-requisitos
 
 - Conta MetaMask configurada na testnet Sepolia
