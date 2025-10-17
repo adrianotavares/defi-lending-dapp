@@ -68,7 +68,7 @@ async function connectWallet() {
     // Verificar novamente após a tentativa de troca
     const updatedNetwork = await provider.getNetwork();
     if (Number(updatedNetwork.chainId) !== sepoliaChainId) {
-      log("❌ Este dApp funciona apenas na Sepolia Testnet. Por favor, troque a rede no MetaMask.");
+      log("Este dApp funciona apenas na Sepolia Testnet. Por favor, troque a rede na sua wallet.");
       return;
     }
     
@@ -95,7 +95,7 @@ async function connectWallet() {
     // Atualizar informações do usuário após conectar
     await updateUserInfo();
     
-    log("✅ Carteira conectada na Sepolia Testnet!");
+    log("Carteira conectada na Sepolia Testnet!");
   } catch (err) {
     log("Erro ao conectar: " + err.message);
   }
@@ -223,7 +223,7 @@ async function validateNetwork() {
     const sepoliaChainId = 11155111;
     
     if (Number(network.chainId) !== sepoliaChainId) {
-      log("❌ Operação cancelada! Troque para Sepolia Testnet.");
+      log("Operação cancelada! Troque para Sepolia Testnet.");
       return false;
     }
     
@@ -260,7 +260,7 @@ function setupNetworkListener() {
     window.ethereum.on('chainChanged', (chainId) => {
       const sepoliaChainId = '0xaa36a7'; // Sepolia em hex
       if (chainId !== sepoliaChainId) {
-        log("❌ Rede alterada! Este dApp funciona apenas na Sepolia Testnet.");
+        log("Rede alterada! Este dApp funciona apenas na Sepolia Testnet.");
         // Ocultar seções de informações do usuário
         document.getElementById("walletInfo").style.display = "none";
         document.getElementById("userInfo").style.display = "none";
@@ -268,7 +268,7 @@ function setupNetworkListener() {
         signer = null;
         contract = null;
       } else {
-        log("✅ Conectado na Sepolia Testnet! Clique em 'Conectar MetaMask' novamente.");
+        log("Conectado em Sepolia Testnet! Clique em 'Conectar Wallet' novamente.");
       }
     });
 
